@@ -2,6 +2,7 @@
 
 DEFAULT_CHAINS=("INPUT" "OUTPUT" "FORWARD")
 LAN_IFACE="enp2s0"
+VALID_TCP_PORTS=("22")
 
 #---------shortcut to resetting the default policy---------
 if [ "$1" = "reset" ]
@@ -26,19 +27,23 @@ for CHAIN in "${DEFAULT_CHAINS[@]}"; do
     fi   
 done
 
-#------------allow DNS and DHCP traffic-------------------
-iptables -A OUTPUT -p udp -o eth0 --dport 53 -j ACCEPT
-iptables -A INPUT -p udp -i eth0 --sport 53 -j ACCEPT
-iptables -I INPUT -i "$LAN_IFACE" -p udp --dport 67:68 --sport 67:68 -j ACCEPT
+#----user-defined chains-------
+iptables -N ssh
+iptables -N www
 
-#----------ACCEPT packets----------------------
+# #------------allow DNS and DHCP traffic-------------------
+# iptables -A OUTPUT -p udp -o eth0 --dport 53 -j ACCEPT
+# iptables -A INPUT -p udp -i eth0 --sport 53 -j ACCEPT
+# iptables -I INPUT -i "$LAN_IFACE" -p udp --dport 67:68 --sport 67:68 -j ACCEPT
+
+#----------ACCEPT packets on ssh and www----------------------
 #inbound/outbound TCP packets on allowed ports
-iptables -A FORWARD -p TCP -m multiport --sport "$VALID_TCP_PORTS" -m state --state NEW,ESTABLISHED -j ACCEPT
-iptables -A FORWARD -p TCP -m multiport --dport "$VALID_TCP_PORTS" -m state --state NEW,ESTABLISHED -j ACCEPT
+iptables -A INPUT -p TCP -m multiport --sport "$VALID_TCP_PORTS" -m state --state NEW,ESTABLISHED -j ACCEPT
+iptables -A INPUT -p TCP -m multiport --dport "$VALID_TCP_PORTS" -m state --state NEW,ESTABLISHED -j ACCEPT
 
-#inbound/outbound UDP packets on allowed ports
-iptables -A FORWARD -p UDP -m multiport --sport "$VALID_UDP_PORTS" -j ACCEPT
-iptables -A FORWARD -p UDP -m multiport --dport "$VALID_UDP_PORTS" -j ACCEPT
+# #inbound/outbound UDP packets on allowed ports
+# iptables -A FORWARD -p UDP -m multiport --sport "$VALID_UDP_PORTS" -j ACCEPT
+# iptables -A FORWARD -p UDP -m multiport --dport "$VALID_UDP_PORTS" -j ACCEPT
 
 
 # Permit inbound/outbound ssh packets
