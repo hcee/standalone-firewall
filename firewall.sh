@@ -9,26 +9,11 @@ then
   iptables -P INPUT ACCEPT
   iptables -P OUTPUT ACCEPT
   iptables -P FORWARD ACCEPT
-  iptables -t nat -P PREROUTING ACCEPT
-  iptables -t nat -P OUTPUT ACCEPT
-  iptables -t nat -P POSTROUTING ACCEPT
-  iptables -t mangle -P PREROUTING ACCEPT
-  iptables -t mangle -P OUTPUT ACCEPT
-
   iptables -X
-  iptables -t nat -X
-  iptables -t mangle -X
-
   iptables -F
-  iptables -t nat -F
-  iptables -t mangle -F
-
   echo "Firewall rules reset!"
   exit 0
 fi
-
-#-----------------flush the firewall rules-------------
-iptables -F
 
 #-----------Set the default policies to DROP--------------
 for CHAIN in "${DEFAULT_CHAINS[@]}"; do
