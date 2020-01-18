@@ -31,18 +31,22 @@ done
 
 
 #------------allow DNS and DHCP traffic-------------------
-iptables -A OUTPUT -p udp --dport 53 -j ACCEPT
-iptables -A INPUT -p udp --sport 53 -j ACCEPT
-iptables -A OUTPUT -p tcp --dport 53 -j ACCEPT
-iptables -A INPUT -p tcp --sport 53 -j ACCEPT
-iptables -I INPUT -p udp --dport 67:68 --sport 67:68 -j ACCEPT
+# iptables -A INPUT -m udp -p udp --dport 53 -j ACCEPT
+# iptables -A INPUT -m udp -p udp --sport 53 -j ACCEPT
+# iptables -A OUTPUT -m udp -p udp --dport 53 -j ACCEPT
+# iptables -A OUTPUT -m udp -p udp --sport 53 -j ACCEPT
+# iptables -A INPUT -m tcp -p tcp --dport 53 -j ACCEPT
+# iptables -A INPUT -m tcp -p tcp --sport 53 -j ACCEPT
+# iptables -A OUTPUT -m tcp -p tcp --dport 53 -j ACCEPT
+# iptables -A OUTPUT -m tcp -p tcp --sport 53 -j ACCEPT
+# iptables -I INPUT -p udp --dport 67:68 --sport 67:68 -j ACCEPT
 
 iptables -A INPUT -i lo -j ACCEPT
 iptables -A OUTPUT -o lo -j ACCEPT
 
-#----------ACCEPT packets on ssh and www----------------------
-#inbound/outbound TCP packets on allowed ports
-iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+#----------ACCEPT packets on www----------------------
+iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+iptables -A OUTPUT -p tcp --sport 80 -j ACCEPT
 
 
 # #inbound/outbound UDP packets on allowed ports
