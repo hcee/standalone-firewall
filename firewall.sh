@@ -30,6 +30,9 @@ done
 
 #----user-defined chains-------
 
+# Drop inbound traffic to port 80 (http) from source ports less than 1024
+iptables -A INPUT -p tcp -s 192.168.0.0/24 --sport 0:1023 --dport 80 -j DROP
+
 # #------------allow DNS and DHCP traffic-------------------
 iptables -I INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 iptables -I OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
@@ -45,11 +48,13 @@ iptables -A OUTPUT -p tcp -d 192.168.0.0/24 --dport 22 -m conntrack --ctstate NE
 
 iptables -A OUTPUT -p udp -m udp --dport 53 -j ACCEPT #---this works for sure as well
 
+
 #----------Permit inbound/outbound www packets---------------------
 iptables -A INPUT -p tcp -m multiport --dport "$VALID_TCP_PORTS" -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
 iptables -A OUTPUT -p tcp -m multiport --dport "$VALID_TCP_PORTS" -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT #---this works also.
 
-# Drop inbound traffic to port 80 (http) from source ports less than 1024
+
+
 # Drop all incoming packets from reserved port 0 as well as outbound traffic to port 0
 
 iptables -L -n
